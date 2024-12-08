@@ -13,7 +13,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,7 +45,7 @@ fun OtpInputField(
     onKeyboardBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var text by remember {
+    var text by remember(number) {
         mutableStateOf(
             TextFieldValue(
                 text = number?.toString().orEmpty(),
@@ -86,7 +85,7 @@ fun OtpInputField(
                 color = MaterialTheme.colorScheme.primary,
             ),
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
+                keyboardType = KeyboardType.NumberPassword,
             ),
             modifier = Modifier
                 .padding(10.dp)
