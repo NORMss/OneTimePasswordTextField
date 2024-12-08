@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -26,7 +27,7 @@ class MainActivity : ComponentActivity() {
             MyOneTimePasswordTextFieldTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     val viewModel = viewModel<OtpViewModel>()
-                    val state = viewModel.state.collectAsStateWithLifecycle()
+                    val state by viewModel.state.collectAsStateWithLifecycle()
                     val focusRequesters = remember {
                         List(4) {
                             FocusRequester()
@@ -35,16 +36,14 @@ class MainActivity : ComponentActivity() {
                     val focusManager = LocalFocusManager.current
                     val keyboardManager = LocalSoftwareKeyboardController.current
 
-                    LaunchedEffect(state.value.focusedIndex) {
-                        state.value.focusedIndex?.let { focusedIndex ->
-                            if (state.value.focusedIndex != null) {
-                                focusRequesters.getOrNull(focusedIndex)?.requestFocus()
-                            }
+                    LaunchedEffect(state.focusedIndex) {
+                        state.focusedIndex?.let { focusedIndex ->
+                            focusRequesters.getOrNull(focusedIndex)?.requestFocus()
                         }
                     }
 
-                    LaunchedEffect(state.value.code, keyboardManager) {
-                        val allNumbersEntered = state.value.code.none { it == null }
+                    LaunchedEffect(state.code, keyboardManager) {
+                        val allNumbersEntered = state.code.none { it == null }
                         if (allNumbersEntered) {
                             focusRequesters.forEach {
                                 it.freeFocus()
@@ -56,7 +55,7 @@ class MainActivity : ComponentActivity() {
 
 
                     OtpScreen(
-                        state = state.value,
+                        state = state,
                         onAction = { action ->
                             when (action) {
                                 is OtpAction.OnEnterNumber -> {
